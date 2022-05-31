@@ -1,3 +1,6 @@
+import { ColorPickerStyle } from './ColorPickerStyle'
+import { hexToHsb, hsbToHex } from './utils'
+
 const palletClr = [
 	'#000000',
 	'#1D2B53',
@@ -20,121 +23,40 @@ const palletClr = [
 //color picker web component
 export default class ColorPicker extends HTMLElement {
 	private _picker: HTMLDivElement
+	private _cursor: HTMLSpanElement
 	private _hueRange: HTMLInputElement
 	private _hexInput: HTMLInputElement
 	private _pallet: HTMLDivElement
+	private _selectedClr: HTMLInputElement
+	private _hue: number = 0
+	private _saturation: number = 0
+	private _brightness: number = 0
+	private _palletClr = [...palletClr]
 	constructor() {
 		super()
 		const shadow = this.attachShadow({ mode: 'open' })
-		const style = document.createElement('style')
-		style.textContent = /*css*/ `
-            :host {
-                display:grid;
-                position: relative;
-                padding:.5rem;
-                gap:.15rem;
-                grid-template-columns:3rem 1fr 1rem;
-                justify-items:center;
-                align-items:center;
-                grid-template-rows:auto 1.4rem;
-                background-color:#3f3e3e;
-                border-radius:0.3125rem;
-            }
-            .pallet{
-                grid-row:1 / span 2;
-                display:grid;
-                grid-template-columns:repeat(2,1rem);
-                grid-template-rows:repeat(8,1rem);
-                gap:0.2rem;
-                justify-content:center;
-                align-content:center;
-            }
-            .colorBtn{
-                display: none;
-            }
-            .colorLabel{
-                cursor:pointer;
-                border-radius:0.125rem;
-            }
-            .colorBtn:checked + .colorLabel{
-                outline:1px solid white;
-                outline-offset: 2px;
-            }
-            .picker{
-                width:100%;
-                height:auto;
-                aspect-ratio:1;
-                background-color: #ff0000;
-                position:relative;
-            }
-            .picker::after{
-                content:"";
-                position:absolute;
-                inset:0;
-                background-image: linear-gradient(to right, #fff, rgba(204, 154, 129, 0));
-            }
-            .picker::before{
-                content:"";
-                position:absolute;
-                inset:0;
-                z-index:1;
-                background-image: linear-gradient(to top, #000, rgba(204, 154, 129, 0));
-            }
-            .hueRange{
-                grid-row:1;
-                grid-column:3;
-                outline: 0;
-                -webkit-appearance :none;
-                width:7rem;
-                height:.5rem;
-                border-radius:0.5rem;
-                box-sizing:border-box;
-                background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
-                transform: rotate(-90deg);
-                cursor:pointer;
-            }
-            input[type=range]::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                border: 2px solid #ffff;
-                height: 1rem;
-                width: .35rem;
-                background: transparent;
-                cursor: pointer;
-              }
-              
-              input[type=range]::-moz-range-thumb {
-                -webkit-appearance: none;
-                border: 2px solid #ffff;
-                height: 1rem;
-                width: .35rem;
-                background: transparent;
-                cursor: pointer;
-              }
-            .hexInput{
-                grid-row:2;
-                grid-column:2 / -1;
-                display:block;
-                width:100%;
-                margin:0;
-                box-sizing:border-box;
-                background-color:#282828;
-                color:#ffff;
-                font-size:.7rem;
-                border:0;
-                padding:.4rem;
-            }
-        `
 
-		this._pallet = this._createPallet(palletClr)
 		this._picker = this._createPicker()
+
+		this._cursor = document.createElement('span')
+		this._cursor.classList.add('picker_cursor')
+		this._picker.appendChild(this._cursor)
+
 		this._hueRange = this._createHueRange()
+		this._pallet = this._createPallet(this._palletClr)
 		this._hexInput = this._createHexInput()
 
-		shadow.appendChild(style)
-		shadow.appendChild(this._pallet)
+		shadow.appendChild(ColorPickerStyle)
 		shadow.appendChild(this._picker)
 		shadow.appendChild(this._hueRange)
+		shadow.appendChild(this._pallet)
 		shadow.appendChild(this._hexInput)
+
+		this._updateHSB(this._palletClr[0])
+		this._selectedClr = this._pallet.querySelector(`input[value="${this._palletClr[0]}"]`) as HTMLInputElement
+		this._selectedClr.checked = true
+		this._updateHexInput()
+		this._upadtePicker()
 	}
 
 	private _createPallet(clrs: string[]) {
@@ -145,25 +67,25 @@ export default class ColorPicker extends HTMLElement {
 			colorBtn.setAttribute('type', 'radio')
 			colorBtn.setAttribute('name', 'color')
 			colorBtn.setAttribute('value', clr)
-			colorBtn.setAttribute('label', clr)
 			colorBtn.id = `clrBtn-${clrs.indexOf(clr)}`
 			colorBtn.classList.add('colorBtn')
 			const colorLabel = document.createElement('label')
 			colorLabel.setAttribute('for', `clrBtn-${clrs.indexOf(clr)}`)
 			colorLabel.classList.add('colorLabel')
 			colorLabel.style.backgroundColor = clr
+			colorBtn.addEventListener('click', e => this._clrBtnClick(e))
 
 			pallet.appendChild(colorBtn)
 			pallet.appendChild(colorLabel)
 		})
-		const firstBtn = pallet.querySelector('input') as HTMLInputElement
-		firstBtn.checked = true
 		return pallet
 	}
 
 	private _createPicker() {
 		const picker = document.createElement('div')
 		picker.classList.add('picker')
+		picker.addEventListener('click', e => this._pickerClick(e))
+		picker.addEventListener('mousemove', e => this._pickerMove(e))
 		return picker
 	}
 
@@ -176,7 +98,7 @@ export default class ColorPicker extends HTMLElement {
 		hueRange.setAttribute('step', '1')
 		hueRange.setAttribute('name', 'hue')
 		hueRange.classList.add('hueRange')
-		hueRange.addEventListener('input', e => this._hueRangeChange(e))
+		hueRange.addEventListener('input', _ => this._hueRangeChange())
 		return hueRange
 	}
 
@@ -186,139 +108,97 @@ export default class ColorPicker extends HTMLElement {
 		hexInput.setAttribute('type', 'text')
 		hexInput.setAttribute('name', 'hex')
 		hexInput.setAttribute('value', '#000000')
+		hexInput.addEventListener('input', e => this._hexInputChange(e))
 		return hexInput
 	}
 
-	private _hueRangeChange(e: Event) {
-		const hue = (e.target as HTMLInputElement).value
-		const hexClr = ColorPicker._hsbToHex(parseInt(hue), 100, 100)
-		this._picker.style.setProperty('background-color', hexClr)
+	private _hueRangeChange() {
+		this._hue = parseInt(this._hueRange.value)
+		this._upadtePicker()
+		this._updateHexInput()
+		this._updateSelectedClr()
 	}
 
-	//http://data0.eklablog.com/n0f4c3/perso/code%20rgb/colorpicker/colormethods.js
-	private static _rgbToHsb(r: number, g: number, b: number) {
-		r /= 255
-		g /= 255
-		b /= 255
+	private _pickerClick(e: MouseEvent) {
+		const { left, top, width, height } = this._picker.getBoundingClientRect()
+		const x = e.clientX - left
+		const y = e.clientY - top
+		this._cursor.style.setProperty('left', `${x}px`)
+		this._cursor.style.setProperty('top', `${y}px`)
+		this._brightness = Math.min(100, Math.max(0, 100 - (y / height) * 100))
+		this._saturation = Math.min(100, Math.max(0, (x / width) * 100))
+		this._updateHexInput()
+		this._updateSelectedClr()
+	}
 
-		const hsv = { h: 0, s: 0, v: 0 }
-
-		var min = 0
-		var max = 0
-
-		if (r >= g && r >= b) {
-			max = r
-			min = g > b ? b : g
-		} else if (g >= b && g >= r) {
-			max = g
-			min = r > b ? b : r
-		} else {
-			max = b
-			min = g > r ? r : g
+	private _pickerMove(e: MouseEvent) {
+		if (e.buttons === 1) {
+			const { left, top, width, height } = this._picker.getBoundingClientRect()
+			const x = Math.min(width, Math.max(0, e.clientX - left))
+			const y = Math.min(height, Math.max(0, e.clientY - top))
+			this._cursor.style.setProperty('left', `${x}px`)
+			this._cursor.style.setProperty('top', `${y}px`)
+			this._brightness = Math.min(100, Math.max(0, 100 - (y / height) * 100))
+			this._saturation = Math.min(100, Math.max(0, (x / width) * 100))
+			this._updateHexInput()
+			this._updateSelectedClr()
 		}
+	}
 
-		hsv.v = max
-		hsv.s = max ? (max - min) / max : 0
+	private _clrBtnClick(e: MouseEvent) {
+		const target = e.target as HTMLInputElement
+		this._selectedClr = target
+		this._updateHSB(target.value)
+		this._upadtePicker()
+		this._updateHexInput()
+		this._updateHueRange()
+	}
 
-		if (!hsv.s) {
-			hsv.h = 0
-		} else {
-			const delta = max - min
-			if (r == max) {
-				hsv.h = (g - b) / delta
-			} else if (g == max) {
-				hsv.h = 2 + (b - r) / delta
-			} else {
-				hsv.h = 4 + (r - g) / delta
-			}
-
-			hsv.h = Math.floor(hsv.h * 60)
-			if (hsv.h < 0) {
-				hsv.h += 360
-			}
+	private _updateHSB(hex: string) {
+		const hsb = hexToHsb(hex)
+		if (hsb) {
+			this._hue = hsb.h
+			this._saturation = hsb.s
+			this._brightness = hsb.b
 		}
-
-		hsv.s = Math.floor(hsv.s * 100)
-		hsv.v = Math.floor(hsv.v * 100)
-
-		return hsv
 	}
-
-	private static _hsbToHex(h: number, s: number, v: number) {
-		let r = 0,
-			g = 0,
-			b = 0
-
-		if (s == 0) {
-			if (v == 0) {
-				r = g = b = 0
-			} else {
-				r = g = b = Math.floor((v * 255) / 100)
-			}
+	private _hexInputChange(e: Event) {
+		const target = e.target as HTMLInputElement
+		const regex = /^#([A-Fa-f0-9]{6})$/
+		if (regex.test(target.value)) {
+			this._hexInput.classList.remove('error')
+			this._updateHSB(target.value)
+			this._upadtePicker()
+			this._updateHueRange()
 		} else {
-			if (h == 360) {
-				h = 0
-			}
-			h /= 60
-
-			s = s / 100
-			v = v / 100
-
-			var i = Math.floor(h)
-			var f = h - i
-			var p = v * (1 - s)
-			var q = v * (1 - s * f)
-			var t = v * (1 - s * (1 - f))
-			switch (i) {
-				case 0:
-					r = v
-					g = t
-					b = p
-					break
-				case 1:
-					r = q
-					g = v
-					b = p
-					break
-				case 2:
-					r = p
-					g = v
-					b = t
-					break
-				case 3:
-					r = p
-					g = q
-					b = v
-					break
-				case 4:
-					r = t
-					g = p
-					b = v
-					break
-				case 5:
-					r = v
-					g = p
-					b = q
-					break
-			}
-
-			r = Math.floor(r * 255)
-			g = Math.floor(g * 255)
-			b = Math.floor(b * 255)
+			this._hexInput.classList.add('error')
+			console.log(target.value)
 		}
-		const hex = this._rgbToHex(r, g, b)
-
-		// return { rgb: [r, g, b], hex }
-		return hex
 	}
 
-	private static _rgbToHex(r: number, g: number, b: number) {
-		return '#' + [r, g, b].map(n => ('0' + n.toString(16)).slice(-2)).join('')
+	private _updateHexInput() {
+		const hex = hsbToHex(this._hue, this._saturation, this._brightness)
+		this._hexInput.value = hex
 	}
 
-	private static _hexTorgb(hex: string) {
-		const arr = hex.match(/([a-fA-F0-9][a-fA-F0-9])/g)?.map(str => parseInt(str, 16))
-		if (arr) return [0, 0, 0].map((v, i) => arr[i] || v)
-		return [0, 0, 0]
+	private _upadtePicker() {
+		this._picker.style.setProperty('background-color', hsbToHex(this._hue, 100, 100))
+		const { width, height } = this._picker.getBoundingClientRect()
+		const x = (this._saturation / 100) * width
+		const y = (1 - this._brightness / 100) * height
+		this._cursor.style.setProperty('left', `${x}px`)
+		this._cursor.style.setProperty('top', `${y}px`)
+	}
+
+	private _updateSelectedClr() {
+		const hex = hsbToHex(this._hue, this._saturation, this._brightness)
+		this._selectedClr.value = hex
+		const id = this._selectedClr.id
+		const label = this._pallet.querySelector(`label[for="${id}"]`) as HTMLLabelElement
+		label.style.setProperty('background-color', hex)
+	}
+
+	private _updateHueRange() {
+		this._hueRange.value = `${this._hue}`
 	}
 }
