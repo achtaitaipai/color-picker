@@ -25,6 +25,7 @@ export default class HexInput {
 			this._colorPicker.updateHSB(target.value)
 			this._colorPicker.picker.update()
 			this._colorPicker.hueRange.update()
+			this._colorPicker.pallet?.update()
 		} else {
 			this.element.classList.add('error')
 		}
