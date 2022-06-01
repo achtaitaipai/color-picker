@@ -128,3 +128,7 @@ export function hexToHsb(hex: string) {
 	const rgb = hexTorgb(hex)
 	return rgb ? rgbToHsb(rgb[0], rgb[1], rgb[2]) : null
 }
+
+export function isHexClr(str: string) {
+	return /(^#[0-9A-F]{6}$)/i.test(str)
+}

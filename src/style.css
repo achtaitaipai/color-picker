@@ -11,3 +11,10 @@ main {
 .container {
 	width: 200px;
 }
+
+color-picker {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}

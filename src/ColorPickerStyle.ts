@@ -6,9 +6,10 @@ style.textContent = /*css*/ `
 				align-items: center;
                 position: relative;
                 padding:.5rem;
-                gap:.5rem;
+                gap:.31rem;
                 background-color:#3f3e3e;
                 border-radius:0.3125rem;
+                display:none;
             }
             .picker{
                 width:100%;
@@ -38,7 +39,6 @@ style.textContent = /*css*/ `
                 border-radius:50%;
                 border:2px solid #fff;
                 mix-blend-mode:difference;
-                top:0;
                 left:100%;
                 transform:translate(-50%,-50%);
                 z-index:2;
@@ -46,13 +46,16 @@ style.textContent = /*css*/ `
             .hueRange{
 				-webkit-appearance :none;
                 width:100%;
-                height:.5rem;
+                height:.8rem;
                 outline: 0;
                 border-radius:0.5rem;
                 box-sizing:border-box;
                 background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
                 cursor:pointer;
 				padding:0;
+            }
+            .hueRange:focus{
+                outline:1px solid;
             }
             input[type=range]::-webkit-slider-thumb {
                 -webkit-appearance: none;
@@ -88,6 +91,9 @@ style.textContent = /*css*/ `
 				height:auto;
 				aspect-ratio:69 / 69;
             }
+            .colorLabel:hover,.colorLabel:focus{
+                transform:scale(1.1);
+            }
             .colorBtn:checked + .colorLabel{
                 outline:1px solid white;
                 outline-offset: 1px;
@@ -101,12 +107,21 @@ style.textContent = /*css*/ `
                 box-sizing:border-box;
                 background-color:#282828;
                 color:#ffff;
-                font-size:.7rem;
+                font-size:.8em;
                 border:0;
                 padding:.4rem;
             }
             .hexInput.error{
                 background-color: #7b0000;
+            }
+            .btns{
+                display:flex;
+                width:100%;
+                gap:.3125rem;
+            }
+            .btns_ok,.btns_cancel{
+                width:100%;
+                cursor:pointer;
             }
         `
 export { style as ColorPickerStyle }
