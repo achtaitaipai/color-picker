@@ -2,7 +2,7 @@ import ColorPicker from './ColorPicker'
 
 export default class HueRange {
 	public element: HTMLInputElement
-	constructor(private _colorPicker: ColorPicker) {
+	constructor(private _colorPicker: ColorPicker, private _onChange: (hue: number) => void) {
 		this.element = document.createElement('input')
 		this.element.classList.add('hueRange')
 		this.element.setAttribute('type', 'range')
@@ -13,10 +13,7 @@ export default class HueRange {
 	}
 
 	private _hueRangeChange() {
-		this._colorPicker.hue = this.value
-		this._colorPicker.picker.update()
-		this._colorPicker.pallet?.update()
-		this._colorPicker.hexInput.update()
+		this._onChange(this.value)
 	}
 
 	public update() {

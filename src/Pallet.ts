@@ -4,7 +4,8 @@ import { hsbToHex } from './utils'
 export default class Pallet {
 	public element: HTMLDivElement
 	public selected: HTMLInputElement
-	constructor(private _colorPicker: ColorPicker, clrs: string[]) {
+
+	constructor(private _colorPicker: ColorPicker, clrs: string[], private _onChange: (hex: string) => void) {
 		this.element = document.createElement('div')
 		this.element.classList.add('pallet')
 		this._init(clrs)
@@ -33,20 +34,14 @@ export default class Pallet {
 			this.element.appendChild(colorLabel)
 			this.selected = this.element.querySelector<HTMLInputElement>('input[type="radio"]')!
 			this.selected.checked = true
-			this._colorPicker.updateHSB(this.selected.value)
-			this._colorPicker.picker.update()
-			this._colorPicker.hueRange.update()
-			this._colorPicker.hexInput?.update()
+			this._onChange(this.selected.value)
 		})
 	}
 
 	private _clrBtnClick(e: MouseEvent) {
 		const target = e.target as HTMLInputElement
 		this.selected = target
-		this._colorPicker.updateHSB(target.value)
-		this._colorPicker.picker.update()
-		this._colorPicker.hueRange.update()
-		this._colorPicker.hexInput.update()
+		this._onChange(target.value)
 	}
 
 	public setColors(clrs: string[]) {
@@ -56,9 +51,9 @@ export default class Pallet {
 
 	public update() {
 		const hex = hsbToHex(this._colorPicker.hue, this._colorPicker.saturation, this._colorPicker.brightness)
-		const label = this.element.querySelector<HTMLLabelElement>(`label[for="${this.selected.id}"]`)!
+		const label = this.element.querySelector<HTMLLabelElement>(`label[for="${this.selected.id}"]`)
 		this.selected.value = hex
-		label.style.setProperty('background-color', hex)
+		if (label) label.style.setProperty('background-color', hex)
 	}
 	get clrs(): string[] {
 		const clrs: string[] = []

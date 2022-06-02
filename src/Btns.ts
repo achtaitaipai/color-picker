@@ -33,7 +33,7 @@ export default class Btns {
 	}
 	private _keyDown(e: KeyboardEvent) {
 		if (e.code === 'Tab' && !e.shiftKey) {
-			this._colorPicker.picker.element.focus()
+			this._colorPicker.shadowRoot?.querySelector<HTMLButtonElement>('.picker')?.focus()
 			e.preventDefault()
 		}
 	}

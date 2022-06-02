@@ -6,8 +6,8 @@ style.textContent = /*css*/ `
 				align-items: center;
                 position: relative;
                 padding:.5rem;
-                gap:.31rem;
-                background-color:#3f3e3e;
+                gap:.7rem;
+                background-color:var(--bg,#3f3e3e);
                 border-radius:0.3125rem;
                 display:none;
             }
@@ -43,6 +43,13 @@ style.textContent = /*css*/ `
                 transform:translate(-50%,-50%);
                 z-index:2;
             }
+            .range-wrapper{
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                width:100%;
+                gap:.5rem;
+            }
             .hueRange{
 				-webkit-appearance :none;
                 width:100%;
@@ -56,6 +63,12 @@ style.textContent = /*css*/ `
             }
             .hueRange:focus{
                 outline:1px solid;
+            }
+            .preview{
+                width:1.5rem;
+                height:auto;
+                aspect-ratio:1;
+                outline:1px solid white;
             }
             input[type=range]::-webkit-slider-thumb {
                 -webkit-appearance: none;
@@ -105,14 +118,14 @@ style.textContent = /*css*/ `
                 width:100%;
                 margin:0;
                 box-sizing:border-box;
-                background-color:#282828;
-                color:#ffff;
+                background-color:var(--bg-input,#282828);
+                color:var(--font-color,white);
                 font-size:.8em;
                 border:0;
                 padding:.4rem;
             }
             .hexInput.error{
-                background-color: #7b0000;
+                background-color: var(--bg-error,#7b0000);
             }
             .btns{
                 display:flex;
@@ -122,6 +135,10 @@ style.textContent = /*css*/ `
             .btns_ok,.btns_cancel{
                 width:100%;
                 cursor:pointer;
+                background-color:var(--bg-input,#282828);
+                color:var(--font-color,white);
+                border:0;
+                padding:0.2rem;
             }
         `
 export { style as ColorPickerStyle }

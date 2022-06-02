@@ -4,7 +4,7 @@ import { hsbToHex } from './utils'
 export default class Picker {
 	public element: HTMLElement
 	public cursor: HTMLElement
-	constructor(private _colorPicker: ColorPicker) {
+	constructor(private _colorPicker: ColorPicker, private _onChange: () => void) {
 		this.element = document.createElement('div')
 		this.element.classList.add('picker')
 		this.element.addEventListener('click', e => this._onClick(e))
@@ -25,8 +25,7 @@ export default class Picker {
 		this.cursor.style.setProperty('top', `${y}px`)
 		this._colorPicker.brightness = Math.min(100, Math.max(0, 100 - (y / height) * 100))
 		this._colorPicker.saturation = Math.min(100, Math.max(0, (x / width) * 100))
-		this._colorPicker.hexInput.update()
-		this._colorPicker.pallet?.update()
+		this._onChange()
 	}
 
 	private _onMove(e: MouseEvent) {
@@ -38,8 +37,7 @@ export default class Picker {
 			this.cursor.style.setProperty('top', `${y}px`)
 			this._colorPicker.brightness = Math.min(100, Math.max(0, 100 - (y / height) * 100))
 			this._colorPicker.saturation = Math.min(100, Math.max(0, (x / width) * 100))
-			this._colorPicker.pallet?.update()
-			this._colorPicker.hexInput.update()
+			this._onChange()
 		}
 	}
 
@@ -47,26 +45,28 @@ export default class Picker {
 		switch (e.key) {
 			case 'ArrowUp':
 				this._colorPicker.brightness = Math.min(100, this._colorPicker.brightness + 10)
+				this._onChange()
 				break
 			case 'ArrowDown':
 				this._colorPicker.brightness = Math.max(0, this._colorPicker.brightness - 10)
+				this._onChange()
 				break
 			case 'ArrowLeft':
 				this._colorPicker.saturation = Math.max(0, this._colorPicker.saturation - 10)
+				this._onChange()
 				break
 			case 'ArrowRight':
 				this._colorPicker.saturation = Math.min(100, this._colorPicker.saturation + 10)
+				this._onChange()
 				break
 			case 'Tab':
 				if (e.shiftKey) {
-					this._colorPicker.btns.cancelBtn.focus()
+					this._colorPicker.shadowRoot?.querySelector<HTMLButtonElement>('.btns_cancel')?.focus()
 					e.preventDefault()
 				}
 				break
 		}
 		this.update()
-		// this._updateHexInput()
-		// this._updateSelectedClr()
 	}
 	public update() {
 		this.element.style.setProperty('background-color', hsbToHex(this._colorPicker.hue, 100, 100))

@@ -17,4 +17,8 @@ color-picker {
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
+	/* --bg: rgb(13, 1, 45); */
+	/* --bg-input: red; */
+	--font-color: red;
+	--bg-error: red;
 }
