@@ -1,4 +1,4 @@
-import ColorPicker from './ColorPicker'
+import { ColorPicker } from '.'
 import { hsbToHex } from './utils'
 
 export default class Picker {
@@ -30,6 +30,7 @@ export default class Picker {
 
 	private _onMove(e: MouseEvent) {
 		if (e.buttons === 1) {
+			e.preventDefault()
 			const { left, top, width, height } = this.element.getBoundingClientRect()
 			const x = Math.min(width, Math.max(0, e.clientX - left))
 			const y = Math.min(height, Math.max(0, e.clientY - top))

@@ -8,7 +8,7 @@ import Preview from './Preview'
 import { hexToHsb, hsbToHex, isHexClr } from './utils'
 
 //color picker web component
-export default class ColorPicker extends HTMLElement {
+export class ColorPicker extends HTMLElement {
 	private _picker: Picker
 	private _hueRange: HueRange
 	private _hexInput: HexInput
@@ -24,6 +24,8 @@ export default class ColorPicker extends HTMLElement {
 	public hue: number = 0
 	public saturation: number = 0
 	public brightness: number = 0
+	private _backdrop: HTMLDivElement
+	private _openBtn: HTMLElement | null = null
 	constructor() {
 		super()
 		const shadow = this.attachShadow({ mode: 'open' })
@@ -41,7 +43,6 @@ export default class ColorPicker extends HTMLElement {
 		this._hexInput = new HexInput(this, this._onHexInputChange.bind(this))
 		this._btns = new Btns(this, this.getAttribute('confirm-label') || 'Ok', this.getAttribute('cancel-label') || 'Cancel')
 
-		shadow.appendChild(ColorPickerStyle)
 		shadow.appendChild(this._picker.element)
 		shadow.appendChild(this._rangeWrapper)
 		if (this._pallet) {
@@ -63,16 +64,23 @@ export default class ColorPicker extends HTMLElement {
 		this.setAttribute('aria-label', 'Color Picker')
 		this.setAttribute('role', 'dialog')
 		this.setAttribute('tabindex', '0')
+		shadow.appendChild(ColorPickerStyle())
+
+		this._backdrop = this._createBackdrop()
 	}
 
 	static get observedAttributes() {
 		return ['confirm-label', 'cancel-label', 'pallet']
 	}
 
-	attributeChangedCallback(name: string, _: string, __: string) {
+	attributeChangedCallback(name: string, _: string, newVal: string) {
 		if (name === 'pallet') {
 			this._definePalletClr()
 			this._resetPallet()
+		} else if (name === 'confirm-label') {
+			this._btns.confirmBtn.textContent = newVal
+		} else if (name === 'cancel-label') {
+			this._btns.cancelBtn.textContent = newVal
 		}
 	}
 
@@ -104,6 +112,8 @@ export default class ColorPicker extends HTMLElement {
 	set value(hex: string) {
 		if (!isHexClr(hex)) throw new Error('Invalid hex color')
 		this.updateHSB(hex)
+		this._value = hsbToHex(this.hue, this.saturation, this.brightness)
+		this._savedValue = this._value
 		this._hexInput.update()
 		this._pallet?.update()
 		this._preview.update()
@@ -112,6 +122,7 @@ export default class ColorPicker extends HTMLElement {
 	}
 
 	public open() {
+		this._openBtn = document.activeElement as HTMLElement
 		this.style.display = 'flex'
 		this.setAttribute('aria-hidden', 'false')
 		this._picker.element.focus()
@@ -121,6 +132,22 @@ export default class ColorPicker extends HTMLElement {
 		this._resetPallet()
 		if (this._palletClr) this._savedPalletClr = [...this._palletClr]
 		this._savedValue = this.value
+		document.body.appendChild(this._backdrop)
+	}
+
+	private _createBackdrop() {
+		const backdrop = document.createElement('div')
+		backdrop.classList.add('backdrop')
+		backdrop.addEventListener('click', () => this.exit())
+		backdrop.style.position = 'fixed'
+		backdrop.style.top = '0'
+		backdrop.style.left = '0'
+		backdrop.style.width = '100%'
+		backdrop.style.height = '100%'
+		backdrop.style.zIndex = '1'
+		backdrop.style.backgroundColor = 'rgba(0,0,0,0.5)'
+		backdrop.id = 'clrpckr-backdrop'
+		return backdrop
 	}
 
 	public close() {
@@ -129,6 +156,9 @@ export default class ColorPicker extends HTMLElement {
 		this.removeEventListener('keydown', e => this._keyDown(e))
 		if (this._pallet) this._palletClr = this._pallet.clrs
 		this._value = hsbToHex(this.hue, this.saturation, this.brightness)
+		const backdrop = document.getElementById('clrpckr-backdrop')
+		if (backdrop) backdrop.remove()
+		this._openBtn?.focus()
 	}
 
 	public exit() {
@@ -195,3 +225,5 @@ export default class ColorPicker extends HTMLElement {
 		this._preview.update()
 	}
 }
+
+customElements.define('color-picker', ColorPicker)

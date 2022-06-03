@@ -1,4 +1,4 @@
-import ColorPicker from './ColorPicker'
+import { ColorPicker } from '.'
 import { hsbToHex } from './utils'
 
 export default class Preview {

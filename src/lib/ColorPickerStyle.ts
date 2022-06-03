@@ -1,5 +1,6 @@
-const style = document.createElement('style')
-style.textContent = /*css*/ `
+export function ColorPickerStyle() {
+	const style = document.createElement('style')
+	style.textContent = /*css*/ `
             :host {
 				display:flex;
 				flex-direction: column;
@@ -10,6 +11,7 @@ style.textContent = /*css*/ `
                 background-color:var(--bg,#3f3e3e);
                 border-radius:0.3125rem;
                 display:none;
+                z-index:10;
             }
             .picker{
                 width:100%;
@@ -141,4 +143,5 @@ style.textContent = /*css*/ `
                 padding:0.2rem;
             }
         `
-export { style as ColorPickerStyle }
+	return style
+}

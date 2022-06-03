@@ -1,14 +1,43 @@
 {
-  "name": "color-pickr",
-  "private": true,
-  "version": "0.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "typescript": "^4.5.4",
-    "vite": "^2.9.9"
-  }
+	"name": "@achtaitaipai/color-picker",
+	"author": "Achtaitaipai",
+	"license": "MIT",
+	"keywords": [
+		"color",
+		"picker",
+		"custom-element",
+		"pallet"
+	],
+	"private": true,
+	"version": "0.0.0",
+	"description": "simple color picker custom element",
+	"files": [
+		"dist"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/achtaitaipai/color-picker"
+	},
+	"bugs": {
+		"url": "https://github.com/achtaitaipai/color-picker/issues"
+	},
+	"homepage": "https://github.com/achtaitaipai/color-picker",
+	"main": "./dist/color-picker.umd.js",
+	"module": "./dist/color-picker.es.js",
+	"exports": {
+		".": {
+			"import": "./dist/color-picker.es.js",
+			"require": "./dist/color-picker.umd.js"
+		}
+	},
+	"types": "./dist/types/index.d.ts",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build && tsc --emitDeclarationOnly && move dist/lib dist/types",
+		"preview": "vite preview"
+	},
+	"devDependencies": {
+		"typescript": "^4.5.4",
+		"vite": "^2.9.9"
+	}
 }

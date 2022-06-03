@@ -1,4 +1,4 @@
-import ColorPicker from './ColorPicker'
+import { ColorPicker } from '.'
 
 export default class HueRange {
 	public element: HTMLInputElement
