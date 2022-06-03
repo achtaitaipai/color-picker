@@ -8,7 +8,7 @@
 		"custom-element",
 		"pallet"
 	],
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "simple color picker custom element",
 	"files": [
 		"dist"
