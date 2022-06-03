@@ -8,7 +8,6 @@
 		"custom-element",
 		"pallet"
 	],
-	"private": true,
 	"version": "0.0.0",
 	"description": "simple color picker custom element",
 	"files": [

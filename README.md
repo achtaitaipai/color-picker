@@ -12,13 +12,13 @@ Install the package using npm :
 npm install @achtaitaipai/color-picker
 ```
 
-Then import it in your script
+Import it in your script
 
 ```js
 import @achtaitaipai/color-picker
 ```
 
-Then use the custom element in your html using
+Use the custom element in your html using
 
 `<color-picker></color-picker>`.
 
@@ -30,7 +30,19 @@ Then use the custom element in your html using
 ></color-picker>
 ```
 
-Then open the color-picker with `open()` and listen change with `color-change`
+Define style
+
+```css
+color-picker {
+	position: fixed;
+	width: 200px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+```
+
+Open the color-picker with `open()` and listen change with `color-change`
 
 ```js
 const clrpckr = document.querySelector('color-picker')
