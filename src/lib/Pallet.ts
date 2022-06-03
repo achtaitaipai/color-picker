@@ -16,15 +16,15 @@ export default class Pallet {
 		const selected = this.element.querySelector<HTMLInputElement>('input:checked')
 		this.element.innerHTML = ''
 
-		clrs.forEach(clr => {
+		clrs.forEach((clr, i) => {
 			const colorBtn = document.createElement('input')
 			colorBtn.setAttribute('type', 'radio')
 			colorBtn.setAttribute('name', 'color')
 			colorBtn.setAttribute('value', clr)
-			colorBtn.id = `clrBtn-${clrs.indexOf(clr)}`
+			colorBtn.id = `clrBtn-${i}`
 			colorBtn.classList.add('colorBtn')
 			const colorLabel = document.createElement('label')
-			colorLabel.setAttribute('for', `clrBtn-${clrs.indexOf(clr)}`)
+			colorLabel.setAttribute('for', `clrBtn-${i}`)
 			colorLabel.classList.add('colorLabel')
 			colorLabel.style.backgroundColor = clr
 			colorLabel.setAttribute('tabindex', '0')
