@@ -13,6 +13,9 @@ export default class Pallet {
 	}
 
 	private _init(clrs: string[]) {
+		const selected = this.element.querySelector<HTMLInputElement>('input:checked')
+		this.element.innerHTML = ''
+
 		clrs.forEach(clr => {
 			const colorBtn = document.createElement('input')
 			colorBtn.setAttribute('type', 'radio')
@@ -32,10 +35,16 @@ export default class Pallet {
 
 			this.element.appendChild(colorBtn)
 			this.element.appendChild(colorLabel)
-			this.selected = this.element.querySelector<HTMLInputElement>('input[type="radio"]')!
-			this.selected.checked = true
-			this._onChange(this.selected.value)
 		})
+
+		if (selected) {
+			this.selected = this.element.querySelector<HTMLInputElement>(`#${selected.id}`)!
+			this.selected.checked = true
+		} else {
+			this.selected = selected || this.element.querySelector<HTMLInputElement>('input[type="radio"]')!
+			this.selected.checked = true
+		}
+		this._onChange(this.selected.value)
 	}
 
 	private _clrBtnClick(e: MouseEvent) {
@@ -45,7 +54,6 @@ export default class Pallet {
 	}
 
 	public setColors(clrs: string[]) {
-		this.element.innerHTML = ''
 		this._init(clrs)
 	}
 

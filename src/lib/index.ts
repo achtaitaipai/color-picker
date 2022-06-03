@@ -85,7 +85,6 @@ export class ColorPicker extends HTMLElement {
 	}
 
 	private _resetPallet() {
-		if (this._pallet) this._pallet.element.innerHTML = ''
 		const preview = this._rangeWrapper.querySelector<HTMLDivElement>('.preview')
 		if (preview) this._rangeWrapper.removeChild(preview)
 		if (this._palletClr) {
