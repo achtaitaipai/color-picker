@@ -111,14 +111,20 @@ export class ColorPicker extends HTMLElement {
 
 	set value(hex: string) {
 		if (!isHexClr(hex)) throw new Error('Invalid hex color')
-		this.updateHSB(hex)
 		this._value = hsbToHex(this.hue, this.saturation, this.brightness)
 		this._savedValue = this._value
 		this._hexInput.update()
-		this._pallet?.update()
 		this._preview.update()
 		this._picker.update()
 		this._hueRange.update()
+
+		this.updateHSB(hex)
+		if (this._pallet) {
+			this._pallet?.update()
+			const radios = Array.from(this._pallet.element.querySelectorAll<HTMLInputElement>('input[type="radio"]'))
+			this._palletClr = radios.map(radio => radio.value)
+			this._savedPalletClr = [...this._palletClr]
+		}
 	}
 
 	public open() {
