@@ -37,9 +37,10 @@ export default class Pallet {
 			this.element.appendChild(colorLabel)
 		})
 
-		if (selected) {
-			this.selected = this.element.querySelector<HTMLInputElement>(`#${selected.id}`)!
-			this.selected.checked = true
+		const toSelect = selected ? this.element.querySelector<HTMLInputElement>(`#${selected.id}`) : null
+		if (toSelect) {
+			this.selected = toSelect
+			if (this.selected) this.selected.checked = true
 		} else {
 			this.selected = selected || this.element.querySelector<HTMLInputElement>('input[type="radio"]')!
 			this.selected.checked = true

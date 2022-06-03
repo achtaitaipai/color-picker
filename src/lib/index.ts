@@ -19,6 +19,7 @@ export class ColorPicker extends HTMLElement {
 	private _selectedClr: HTMLInputElement | null = null
 	private _palletClr: string[] | null = null
 	private _savedPalletClr: string[] | null = null
+	private _savedSelected: string | null = null
 	private _value: string
 	private _savedValue: string | null = null
 	public hue: number = 0
@@ -97,7 +98,7 @@ export class ColorPicker extends HTMLElement {
 				}
 			}
 			this._pallet?.setColors(this._palletClr)
-			this._value = this._selectedClr?.value || '#000000'
+			// this._value = this._selectedClr?.value || '#000000'
 		} else {
 			this._rangeWrapper.insertBefore(this._preview.element, this._hueRange.element)
 			this._preview.update()
@@ -131,6 +132,7 @@ export class ColorPicker extends HTMLElement {
 		this._resetPallet()
 		if (this._palletClr) this._savedPalletClr = [...this._palletClr]
 		this._savedValue = this.value
+		this._savedSelected = this._pallet?.element.querySelector<HTMLInputElement>('input:checked')?.id || null
 		document.body.appendChild(this._backdrop)
 	}
 
@@ -164,6 +166,8 @@ export class ColorPicker extends HTMLElement {
 		this.close()
 		if (this._savedPalletClr) this._palletClr = [...this._savedPalletClr]
 		if (this._savedValue) this.value = this._savedValue
+		const selectedRadio = this._pallet?.element.querySelector<HTMLInputElement>(`#${this._savedSelected}`)
+		if (selectedRadio) selectedRadio.checked = true
 	}
 
 	private _definePalletClr() {
