@@ -4,7 +4,7 @@ Simple color-picker custom element
 
 ---
 
-## Installation
+## Usage
 
 Install the package using npm :
 
@@ -23,11 +23,7 @@ Use the custom element in your html using
 `<color-picker></color-picker>`.
 
 ```html
-<color-picker
-	confirm-label="Ok"
-	cancel-label="Cancel"
-	pallet='["#ff0000","#1D2B53","#7E2553","#008751","#AB5236","#5F574F","#C2C3C7","#FFF1E8","#FF004D","#FFA300","#FFEC27","#00E436","#29ADFF","#83769C","#FF77A8","#FFCCAA"]'
-></color-picker>
+<color-picker confirm-label="Ok" cancel-label="Cancel" pallet='["#ff0000","#1D2B53","#7E2553"]'></color-picker>
 ```
 
 Define style
@@ -55,7 +51,9 @@ pckr.addEventListener('color-change', e => {
 
 ---
 
-## Attributes
+## Doc
+
+### Attributes
 
 |      Name       |   Type   |          Example          |
 | :-------------: | :------: | :-----------------------: |
@@ -65,7 +63,7 @@ pckr.addEventListener('color-change', e => {
 
 ---
 
-## Methods
+### Methods
 
 |  Name   |      Description       |
 | :-----: | :--------------------: |
@@ -74,7 +72,7 @@ pckr.addEventListener('color-change', e => {
 
 ---
 
-## CSS Variables
+### CSS Variables
 
 |      Name      |  default  |                description                 |
 | :------------: | :-------: | :----------------------------------------: |
@@ -85,7 +83,7 @@ pckr.addEventListener('color-change', e => {
 
 ---
 
-## Properties
+### Properties
 
 |  Name   |  Type  |  Example  |
 | :-----: | :----: | :-------: |
