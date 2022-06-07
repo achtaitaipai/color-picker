@@ -16,8 +16,7 @@ export function ColorPickerStyle() {
             .picker{
                 width:100%;
                 height:auto;
-                aspect-ratio:1;
-                background-color: #ff0000;
+                padding-top:100%;
                 position:relative;
                 cursor:pointer;
             }
@@ -68,8 +67,7 @@ export function ColorPickerStyle() {
             }
             .preview{
                 width:1.5rem;
-                height:auto;
-                aspect-ratio:1;
+                height:1.2rem;
                 outline:1px solid white;
             }
             input[type=range]::-webkit-slider-thumb {
@@ -103,8 +101,7 @@ export function ColorPickerStyle() {
                 cursor:pointer;
                 border-radius:0.125rem;
 				width:100%;
-				height:auto;
-				aspect-ratio:69 / 69;
+                padding-top:100%;
             }
             .colorLabel:hover,.colorLabel:focus{
                 transform:scale(1.1);
