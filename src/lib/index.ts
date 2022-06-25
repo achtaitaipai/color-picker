@@ -17,7 +17,7 @@ export class ColorPicker extends HTMLElement {
 	private _btns: Btns
 	private _pallet: Pallet | null = null
 	private _selectedClr: HTMLInputElement | null = null
-	private _palletClr: string[] | null = null
+	public palletClr: string[] | null = null
 	private _savedPalletClr: string[] | null = null
 	private _savedSelected: string | null = null
 	private _value: string
@@ -40,7 +40,7 @@ export class ColorPicker extends HTMLElement {
 		this._rangeWrapper = document.createElement('div')
 		this._rangeWrapper.classList.add('range-wrapper')
 		this._rangeWrapper.appendChild(this._hueRange.element)
-		if (this._palletClr) this._pallet = new Pallet(this, this._palletClr, this._onPalletChange.bind(this))
+		if (this.palletClr) this._pallet = new Pallet(this, this.palletClr, this._onPalletChange.bind(this))
 		this._hexInput = new HexInput(this, this._onHexInputChange.bind(this))
 		this._btns = new Btns(this, this.getAttribute('confirm-label') || 'Ok', this.getAttribute('cancel-label') || 'Cancel')
 
@@ -48,9 +48,9 @@ export class ColorPicker extends HTMLElement {
 		shadow.appendChild(this._rangeWrapper)
 		if (this._pallet) {
 			shadow.appendChild(this._pallet.element)
-			if (this._palletClr) {
-				this.updateHSB(this._palletClr[0])
-				this._selectedClr = this._pallet.element.querySelector<HTMLInputElement>(`input[value="${this._palletClr[0]}"]`)
+			if (this.palletClr) {
+				this.updateHSB(this.palletClr[0])
+				this._selectedClr = this._pallet.element.querySelector<HTMLInputElement>(`input[value="${this.palletClr[0]}"]`)
 			}
 		} else {
 			this._rangeWrapper.insertBefore(this._preview.element, this._hueRange.element)
@@ -88,16 +88,16 @@ export class ColorPicker extends HTMLElement {
 	private _resetPallet() {
 		const preview = this._rangeWrapper.querySelector<HTMLDivElement>('.preview')
 		if (preview) this._rangeWrapper.removeChild(preview)
-		if (this._palletClr) {
+		if (this.palletClr) {
 			if (!this._pallet) {
-				this._pallet = new Pallet(this, this._palletClr, this._onPalletChange)
+				this._pallet = new Pallet(this, this.palletClr, this._onPalletChange)
 				this.shadowRoot?.insertBefore(this._pallet.element, this._hexInput.element)
-				this._selectedClr = this._pallet.element.querySelector<HTMLInputElement>(`input[value="${this._palletClr[0]}"]`)
+				this._selectedClr = this._pallet.element.querySelector<HTMLInputElement>(`input[value="${this.palletClr[0]}"]`)
 				if (this._selectedClr) {
 					this._selectedClr.checked = true
 				}
 			}
-			this._pallet?.setColors(this._palletClr)
+			this._pallet?.setColors(this.palletClr)
 			// this._value = this._selectedClr?.value || '#000000'
 		} else {
 			this._rangeWrapper.insertBefore(this._preview.element, this._hueRange.element)
@@ -122,8 +122,8 @@ export class ColorPicker extends HTMLElement {
 		if (this._pallet) {
 			this._pallet?.update()
 			const radios = Array.from(this._pallet.element.querySelectorAll<HTMLInputElement>('input[type="radio"]'))
-			this._palletClr = radios.map(radio => radio.value)
-			this._savedPalletClr = [...this._palletClr]
+			this.palletClr = radios.map(radio => radio.value)
+			this._savedPalletClr = [...this.palletClr]
 		}
 	}
 
@@ -136,7 +136,7 @@ export class ColorPicker extends HTMLElement {
 		this._picker.update()
 		this._hexInput.update()
 		this._resetPallet()
-		if (this._palletClr) this._savedPalletClr = [...this._palletClr]
+		if (this.palletClr) this._savedPalletClr = [...this.palletClr]
 		this._savedValue = this.value
 		this._savedSelected = this._pallet?.element.querySelector<HTMLInputElement>('input:checked')?.id || null
 		document.body.appendChild(this._backdrop)
@@ -161,7 +161,7 @@ export class ColorPicker extends HTMLElement {
 		this.style.display = 'none'
 		this.setAttribute('aria-hidden', 'true')
 		this.removeEventListener('keydown', e => this._keyDown(e))
-		if (this._pallet) this._palletClr = this._pallet.clrs
+		if (this._pallet) this.palletClr = this._pallet.clrs
 		this._value = hsbToHex(this.hue, this.saturation, this.brightness)
 		const backdrop = document.getElementById('clrpckr-backdrop')
 		if (backdrop) backdrop.remove()
@@ -170,7 +170,7 @@ export class ColorPicker extends HTMLElement {
 
 	public exit() {
 		this.close()
-		if (this._savedPalletClr) this._palletClr = [...this._savedPalletClr]
+		if (this._savedPalletClr) this.palletClr = [...this._savedPalletClr]
 		if (this._savedValue) this.value = this._savedValue
 		const selectedRadio = this._pallet?.element.querySelector<HTMLInputElement>(`#${this._savedSelected}`)
 		if (selectedRadio) selectedRadio.checked = true
@@ -187,7 +187,7 @@ export class ColorPicker extends HTMLElement {
 				}
 			})
 		}
-		this._palletClr = pallet.length > 0 ? pallet : null
+		this.palletClr = pallet.length > 0 ? pallet : null
 	}
 
 	private _keyDown(e: KeyboardEvent) {
@@ -232,15 +232,6 @@ export class ColorPicker extends HTMLElement {
 		this._pallet?.update()
 		this._hexInput.update()
 		this._preview.update()
-	}
-
-	get pallet() {
-		return this._pallet?.clrs || []
-	}
-
-	set pallet(clrs: string[]) {
-		this._palletClr = clrs
-		this._value = this._palletClr[0]
 	}
 }
 
