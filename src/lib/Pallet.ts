@@ -70,6 +70,11 @@ export default class Pallet {
 		colorBtns.forEach(colorBtn => {
 			clrs.push(colorBtn.value)
 		})
-		return clrs
+		return clrs ?? []
+	}
+
+	set clrs(clrs: string[]) {
+		this.element.innerHTML = ''
+		this._init(clrs)
 	}
 }

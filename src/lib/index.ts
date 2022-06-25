@@ -233,6 +233,15 @@ export class ColorPicker extends HTMLElement {
 		this._hexInput.update()
 		this._preview.update()
 	}
+
+	get pallet() {
+		return this._pallet?.clrs || []
+	}
+
+	set pallet(clrs: string[]) {
+		this._palletClr = clrs
+		this._value = this._palletClr[0]
+	}
 }
 
 customElements.define('color-picker', ColorPicker)
