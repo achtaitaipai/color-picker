@@ -44,7 +44,7 @@ Open the color-picker with `open()` and listen change with `color-change`
 const clrpckr = document.querySelector('color-picker')
 clrpckr.open()
 
-pckr.addEventListener('color-change', e => {
+clrpckr.addEventListener('color-change', e => {
 	console.log(e.detail)
 })
 ```
